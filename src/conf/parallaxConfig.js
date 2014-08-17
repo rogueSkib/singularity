@@ -6,7 +6,7 @@ exports = {
 			zIndex: 0,
 			pieces: [
 				{
-					image: "resources/images/game/parallax/base/background.png",
+					image: "resources/images/game/levels/base/background.png",
 					gapMin: 0,
 					gapMax: 0
 				}
@@ -18,13 +18,13 @@ exports = {
 			zIndex: 10,
 			pieces: [
 				{
-					image: "resources/images/game/parallax/base/farground_1.png",
+					image: "resources/images/game/levels/base/farground_1.png",
 					y: 312,
 					gapMin: 0,
 					gapMax: 0
 				},
 				{
-					image: "resources/images/game/parallax/base/farground_2.png",
+					image: "resources/images/game/levels/base/farground_2.png",
 					y: 312,
 					gapMin: 0,
 					gapMax: 0
@@ -37,12 +37,12 @@ exports = {
 			zIndex: 50,
 			pieces: [
 				{
-					image: "resources/images/game/parallax/base/midground_1.png",
+					image: "resources/images/game/levels/base/midground_1.png",
 					gapMin: 0,
 					gapMax: 0
 				},
 				{
-					image: "resources/images/game/parallax/base/midground_2.png",
+					image: "resources/images/game/levels/base/midground_2.png",
 					gapMin: 0,
 					gapMax: 0
 				}
