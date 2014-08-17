@@ -8,6 +8,9 @@ import src.views.screens.GameView as GameView;
 import src.conf.soundConfig as soundConfig;
 
 var Controller = Class(function() {
+	var BG_WIDTH = G_BG_WIDTH;
+	var BG_HEIGHT = G_BG_HEIGHT;
+
 	this.init = function(opts) {
 		this.rootView = null;
 		this.activeView = null;
