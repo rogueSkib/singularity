@@ -8,8 +8,10 @@ exports = {
 			volume: MUSIC_VOLUME
 		}
 	},
+	musicPath: 'resources/sounds/music',
 	sfx: {
 		'menuBtnDown': { volume: SOUND_VOLUME },
 		'menuBtnUp': { volume: SOUND_VOLUME }
-	}
+	},
+	sfxPath: 'resources/sounds/sfx'
 };

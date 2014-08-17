@@ -5,4 +5,4 @@ BG_WIDTH = 1024;
 BG_HEIGHT = 576;
 
 // Singleton Controllers
-controller = jsio("import src.controller");
+G_CONTROLLER = jsio('import src.controller');

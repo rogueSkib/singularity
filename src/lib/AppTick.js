@@ -69,13 +69,13 @@ exports = Class(function() {
 
 		// log lag spikes of dt greater than twice the current average dt
 		if (dt >= 2 * avg) {
-			logger.log("~~~ LAG SPIKE:", dt);
+			logger.log('~~~ LAG SPIKE:', dt);
 			spikeCount++;
 		}
 
 		// log average dt periodically
 		if (dtIndex === 0) {
-			logger.log("~~~ AVG DT:", avg);
+			logger.log('~~~ AVG DT:', avg);
 			avgTotal += avg;
 			avgCount++;
 		}
@@ -83,11 +83,11 @@ exports = Class(function() {
 		// log lag spikes per minute
 		dtTotal += dt;
 		if (dtTotal >= 60000) {
-			logger.log("~~~ SPIKES PER MINUTE:", spikeCount);
+			logger.log('~~~ SPIKES PER MINUTE:', spikeCount);
 			dtTotal = 0;
 			spikeCount = 0;
 
-			logger.log("~~~ AVG DT PER MINUTE:", avgTotal / avgCount);
+			logger.log('~~~ AVG DT PER MINUTE:', avgTotal / avgCount);
 			avgTotal = 0;
 			avgCount = 0;
 		}

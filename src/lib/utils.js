@@ -18,8 +18,8 @@ exports.Enum = function (vars, target) {
 
 // create global or object property enumerations identifying an array of objects
 exports.EnumObjectsByID = function (varsObjArray, nameKey, indexKey, target) {
-	nameKey = nameKey || "name";
-	indexKey = indexKey || "id";
+	nameKey = nameKey || 'name';
+	indexKey = indexKey || 'id';
 	target = target || window;
 	for (var i = 0, len = varsObjArray.length; i < len; i++) {
 		var obj = varsObjArray[i];
@@ -61,12 +61,12 @@ exports.readJSON = function(url) {
 			window.CACHE[url] = JSON.parse(window.CACHE[url]);
 		}
 		if (window.CACHE[url] === undefined) {
-			console.error("utils.readJSON: Unable to read file:", url);
-			throw new Error("utils.readJSON: Fail!");
+			console.error('utils.readJSON: Unable to read file:', url);
+			throw new Error('utils.readJSON: Fail!');
 		}
 		return window.CACHE[url];
 	} catch (e) {
-		console.error("utils.readJSON: Invalid JSON!");
+		console.error('utils.readJSON: Invalid JSON!');
 		throw e;
 	}
 };
