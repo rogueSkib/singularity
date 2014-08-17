@@ -3,5 +3,5 @@ exports = Class(function() {
 
 	this.reset = function() {};
 
-	this.step = function() {};
+	this.step = function(dt) {};
 });

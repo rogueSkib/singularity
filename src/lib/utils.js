@@ -7,6 +7,16 @@ var log = Math.log;
 var random = Math.random;
 var resourceMap = loader.getMap();
 
+// copy object properties, without copying other objects or arrays
+exports.copyShallow = function(src, dest, keys) {
+	keys = keys || Object.keys(src);
+	for (var i = 0, len = keys.length; i < len; i++) {
+		var prop = keys[i];
+		var val = src[prop];
+		dest[prop] = val && typeof val === 'object' ? val.length === void 0 ? {} : [] : val;
+	}
+};
+
 // create global or object property enumerations
 exports.Enum = function (vars, target) {
 	target = target || window;
@@ -60,7 +70,7 @@ exports.readJSON = function(url) {
 		if (typeof window.CACHE[url] === 'string') {
 			window.CACHE[url] = JSON.parse(window.CACHE[url]);
 		}
-		if (window.CACHE[url] === undefined) {
+		if (window.CACHE[url] === void 0) {
 			console.error('utils.readJSON: Unable to read file:', url);
 			throw new Error('utils.readJSON: Fail!');
 		}
