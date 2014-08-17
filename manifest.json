@@ -1,0 +1,43 @@
+{
+	"appID": "fd339b48431d463493842ec417b0e84a",
+	"shortName": "singularity",
+	"title": "Singularity",
+	"studio": {
+		"domain": "weeby.co",
+		"name": "Weeby.co"
+	},
+	"supportedOrientations": [
+		"landscape"
+	],
+	"android": {
+		"icons": {
+			"36": "resources/icons/android36.png",
+			"48": "resources/icons/android48.png",
+			"57": "resources/icons/ios57.png",
+			"72": "resources/icons/android72.png",
+			"96": "resources/icons/android96.png",
+			"114": "resources/icons/ios114.png",
+			"144": "resources/icons/ios144.png"
+		},
+		"versionCode": 1
+	},
+	"ios": {
+		"icons": {
+			"36": "resources/icons/android36.png",
+			"48": "resources/icons/android48.png",
+			"57": "resources/icons/ios57.png",
+			"72": "resources/icons/android72.png",
+			"96": "resources/icons/android96.png",
+			"114": "resources/icons/ios114.png",
+			"144": "resources/icons/ios144.png"
+		},
+		"versionCode": 1
+	},
+	"description": "A game about running ... in the future!",
+	"splash": {
+		"autoHide": true,
+		"universal": "resources/splash/splash.png"
+	},
+	"version": "1.0.0",
+	"sdkVersion": "release-0.1.46"
+}
