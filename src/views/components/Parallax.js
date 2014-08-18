@@ -27,9 +27,11 @@ exports = Class(function() {
 		this.rootView = opts.rootView;
 		this.layers = [];
 		this.lastX = 0;
+		this.config = null;
 	};
 
 	this.reset = function(config) {
+		this.config = config;
 		// reset parallax layers and pieces
 		var layers = this.layers;
 		while (layers.length) {
@@ -56,25 +58,27 @@ exports = Class(function() {
 			layer.spawnX = 0;
 			layer.pieces = [];
 			layers.push(layer);
-			// automatically process parallax layer image data
+			// process parallax layer image data
 			var pieces = conf.pieces;
 			for (var j = 0, jlen = pieces.length; j < jlen; j++) {
 				var piece = pieces[j];
-				if (imgCache[piece.image] === void 0) {
-					var imgData = imgCache[piece.image] = {};
-					var img = imgData.image = new Image({ url: piece.image });
-					var b = img.getBounds();
-					imgData.y = piece.y || 0;
-					imgData.width = piece.width || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
-					imgData.height = piece.height || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
-				}
+				!imgCache[piece.image] && this._prepImageData(piece);
 			}
 		}
 		// track offset for spawn timing
 		this.lastX = 0;
 	};
 
-	this.step = function(x) {
+	this._prepImageData = function(data) {
+		var imgData = imgCache[data.image] = {};
+		var img = imgData.image = new Image({ url: data.image });
+		var b = img.getBounds();
+		imgData.y = data.y || 0;
+		imgData.width = data.width || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
+		imgData.height = data.height || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
+	};
+
+	this.update = function(dt, x) {
 		if (this.lastX !== x) {
 			this.lastX = x;
 			// update parallax layers
@@ -101,8 +105,8 @@ exports = Class(function() {
 
 	this._spawnPieces = function(layer, x) {
 		// spawn new parallax pieces as they move on-screen
+		var pieces = layer.config.pieces;
 		while (layer.spawnX <= -x + BG_WIDTH) {
-			var pieces = layer.config.pieces;
 			var pData = pieces[~~(random() * pieces.length)];
 			var iData = imgCache[pData.image];
 			var piece = piecePool.obtainView({

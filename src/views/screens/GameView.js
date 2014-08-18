@@ -2,7 +2,6 @@ import ui.View as View;
 import ui.ImageView as ImageView;
 
 import src.conf.parallaxConfig as parallaxConfig;
-import src.conf.platformConfig as platformConfig;
 import src.views.components.Parallax as Parallax;
 import src.views.components.PlatformViews as PlatformViews;
 
@@ -12,7 +11,7 @@ exports = Class(View, function(supr) {
 
 	var BG_WIDTH = G_BG_WIDTH;
 	var BG_HEIGHT = G_BG_HEIGHT;
-	var Z_PLATFORMS = 90;
+	var Z_PLATFORMS = 100;
 
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
@@ -51,20 +50,12 @@ exports = Class(View, function(supr) {
 
 	this.resetView = function() {
 		model.reset();
-
-		var laxConf = this._getParallaxConfig();
-		this.parallax.reset(laxConf);
-
-		var platConf = this._getPlatformConfig();
-		this.platforms.reset(platConf);
+		this.parallax.reset(this._getParallaxConfig());
+		this.platforms.reset();
 	};
 
 	this._getParallaxConfig = function() {
 		return parallaxConfig.base;
-	};
-
-	this._getPlatformConfig = function() {
-		return platformConfig.base;
 	};
 
 	this.constructView = function() {};
@@ -72,9 +63,7 @@ exports = Class(View, function(supr) {
 
 	this.tick = function(dt) {
 		var offsetX = model.step(dt);
-
-		// update views
-		this.parallax.update(offsetX);
-		this.platforms.update(model.platforms);
+		this.parallax.update(dt, offsetX);
+		this.platforms.update(dt, offsetX, model.getPlatformModels());
 	};
 });

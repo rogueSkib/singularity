@@ -1,3 +1,4 @@
+import src.conf.platformConfig as platformConfig;
 import src.models.PlatformModels as PlatformModels;
 
 exports = Class(function() {
@@ -7,15 +8,20 @@ exports = Class(function() {
 
 	this.reset = function() {
 		this.offsetX = 0;
+		this.platforms.reset(this._getPlatformConfig());
+	};
 
-		this.platforms.reset();
+	this._getPlatformConfig = function() {
+		return platformConfig.base;
 	};
 
 	this.step = function(dt) {
 		this.offsetX += dt;
-
-		this.platforms.update(this.offsetX);
-
+		this.platforms.step(dt, this.offsetX);
 		return this.offsetX;
+	};
+
+	this.getPlatformModels = function() {
+		return this.platforms.getModels();
 	};
 });
