@@ -2,13 +2,17 @@ import ui.View as View;
 import ui.ImageView as ImageView;
 
 import src.conf.parallaxConfig as parallaxConfig;
+import src.conf.platformConfig as platformConfig;
 import src.views.components.Parallax as Parallax;
+import src.views.components.PlatformViews as PlatformViews;
 
 exports = Class(View, function(supr) {
 	var controller;
 	var model;
+
 	var BG_WIDTH = G_BG_WIDTH;
 	var BG_HEIGHT = G_BG_HEIGHT;
+	var Z_PLATFORMS = 90;
 
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
@@ -34,25 +38,43 @@ exports = Class(View, function(supr) {
 		this.parallax = new Parallax({
 			rootView: this.rootView
 		});
+
+		this.platforms = new PlatformViews({
+			parent: this.rootView,
+			zIndex: Z_PLATFORMS,
+			width: 1,
+			height: 1,
+			canHandleEvents: false,
+			blockEvents: true
+		});
 	};
 
 	this.resetView = function() {
 		model.reset();
 
-		var parallaxConfig = this._getParallaxConfig();
-		this.parallax.reset(parallaxConfig);
+		var laxConf = this._getParallaxConfig();
+		this.parallax.reset(laxConf);
+
+		var platConf = this._getPlatformConfig();
+		this.platforms.reset(platConf);
 	};
 
 	this._getParallaxConfig = function() {
 		return parallaxConfig.base;
 	};
 
+	this._getPlatformConfig = function() {
+		return platformConfig.base;
+	};
+
 	this.constructView = function() {};
 	this.deconstructView = function(cb) { cb && cb(); };
 
 	this.tick = function(dt) {
-		model.step(dt);
+		var offsetX = model.step(dt);
 
-		this.parallax.step(model.offsetX);
+		// update views
+		this.parallax.update(offsetX);
+		this.platforms.update(model.platforms);
 	};
 });

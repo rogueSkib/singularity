@@ -45,25 +45,25 @@ exports = Class(function() {
 		}
 		// initialize parallax layers based on config
 		for (var i = 0, ilen = config.length; i < ilen; i++) {
-			var data = config[i];
+			var conf = config[i];
 			var layer = layerPool.obtainView({
 				parent: this.rootView,
-				width: data.width || 1,
-				height: data.height || 1,
-				zIndex: data.zIndex || 1
+				width: conf.width || 1,
+				height: conf.height || 1,
+				zIndex: conf.zIndex || 1
 			});
-			layer.data = data;
+			layer.config = conf;
 			layer.spawnX = 0;
 			layer.pieces = [];
 			layers.push(layer);
-			// automatically process layer image data if we haven't already
-			var pieces = data.pieces;
+			// automatically process parallax layer image data
+			var pieces = conf.pieces;
 			for (var j = 0, jlen = pieces.length; j < jlen; j++) {
 				var piece = pieces[j];
 				if (imgCache[piece.image] === void 0) {
-					imgData = imgCache[piece.image] = {};
-					imgData.image = new Image({ url: piece.image });
-					var b = imgData.image.getBounds();
+					var imgData = imgCache[piece.image] = {};
+					var img = imgData.image = new Image({ url: piece.image });
+					var b = img.getBounds();
 					imgData.y = piece.y || 0;
 					imgData.width = piece.width || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
 					imgData.height = piece.height || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
@@ -81,8 +81,8 @@ exports = Class(function() {
 			var layers = this.layers;
 			for (var l = 0, llen = layers.length; l < llen; l++) {
 				var layer = layers[l];
-				var data = layer.data;
-				var layerX = layer.style.x = -x * data.speed;
+				var config = layer.config;
+				var layerX = layer.style.x = -x * config.speed;
 				this._releaseOffscreenPieces(layer.pieces, layerX);
 				this._spawnPieces(layer, layerX);
 			}
@@ -102,8 +102,8 @@ exports = Class(function() {
 	this._spawnPieces = function(layer, x) {
 		// spawn new parallax pieces as they move on-screen
 		while (layer.spawnX <= -x + BG_WIDTH) {
-			var pieceConfig = layer.data.pieces;
-			var pData = pieceConfig[~~(random() * pieceConfig.length)];
+			var pieces = layer.config.pieces;
+			var pData = pieces[~~(random() * pieces.length)];
 			var iData = imgCache[pData.image];
 			var piece = piecePool.obtainView({
 				parent: layer,
