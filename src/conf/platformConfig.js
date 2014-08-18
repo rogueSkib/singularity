@@ -1,10 +1,13 @@
 exports = {
 	base: [
 		{
-			y: 534,
 			hitX: 0,
 			hitY: 18,
-			hitWidth: 196,
+			viewX: 0,
+			viewY: 534,
+			gapChance: 0.1,
+			gapMin: 200,
+			gapMax: 400,
 			image: "resources/images/game/levels/base/platform.png"
 		}
 	]
