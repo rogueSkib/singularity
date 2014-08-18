@@ -7,7 +7,7 @@ var uidInput = -1;
 exports = Class(ImageScaleView, function(supr) {
 
 	this.init = function(opts) {
-		supr(this, 'init', [opts]);
+		supr(this, 'init', arguments);
 
 		if (!opts.imagePressed) {
 			opts.imagePressed = opts.image;
