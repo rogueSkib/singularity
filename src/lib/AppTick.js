@@ -3,7 +3,7 @@ import timer;
 exports = Class(function() {
 	var min = Math.min;
 	var MIN_TICK = 1;
-	var MAX_TICK = 50;
+	var MAX_TICK = 100;
 	var TICK_MOD = 500;
 	var DT_MULTIPLIER = 1;
 

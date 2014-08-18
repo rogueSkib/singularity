@@ -3,6 +3,7 @@ import device;
 import AudioManager;
 import ui.resource.loader as loader;
 
+import src.lib.AppTick as AppTick;
 import src.models.GameModel as GameModel;
 import src.views.screens.GameView as GameView;
 import src.conf.soundConfig as soundConfig;
@@ -17,6 +18,7 @@ var Controller = Class(function() {
 		this.screenViews = {};
 		this.setScreenDimensions(BG_WIDTH > BG_HEIGHT);
 
+		this.appTick = new AppTick();
 		this.gameModel = new GameModel();
 		this.initAudio();
 	};
