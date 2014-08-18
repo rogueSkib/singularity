@@ -6,11 +6,12 @@ exports = Class(function() {
 	};
 
 	this.obtainModel = function() {
+		var model = null;
 		var models = this._models;
 		if (this._freshModelIndex < models.length) {
-			var model = models[this._freshModelIndex];
+			model = models[this._freshModelIndex];
 		} else {
-			var model = this._createModel();
+			model = this._createModel();
 		}
 		model.active = true;
 		this._freshModelIndex++;
@@ -19,9 +20,7 @@ exports = Class(function() {
 
 	this.releaseModel = function(model) {
 		var models = this._models;
-		var released = false;
 		if (model.active) {
-			released = true;
 			model.active = false;
 			var temp = models[this._freshModelIndex - 1];
 			models[this._freshModelIndex - 1] = model;
@@ -31,7 +30,6 @@ exports = Class(function() {
 			model._poolIndex = tempIndex;
 			this._freshModelIndex--;
 		}
-		return released;
 	};
 
 	this.releaseAllModels = function () {
