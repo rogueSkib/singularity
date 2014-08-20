@@ -2,7 +2,8 @@ import ui.View as View;
 import ui.ImageView as ImageView;
 
 import src.conf.parallaxConfig as parallaxConfig;
-import src.views.components.Parallax as Parallax;
+import src.views.components.PlayerView as PlayerView;
+import src.views.components.ParallaxViews as ParallaxViews;
 import src.views.components.PlatformViews as PlatformViews;
 
 exports = Class(View, function(supr) {
@@ -11,6 +12,7 @@ exports = Class(View, function(supr) {
 
 	var BG_WIDTH = G_BG_WIDTH;
 	var BG_HEIGHT = G_BG_HEIGHT;
+	var Z_PLAYER = 110;
 	var Z_PLATFORMS = 100;
 
 	this.init = function(opts) {
@@ -34,22 +36,24 @@ exports = Class(View, function(supr) {
 			blockEvents: true
 		});
 
-		this.parallax = new Parallax({
+		this.player = new PlayerView({
+			parent: this.rootView,
+			zIndex: Z_PLAYER
+		});
+
+		this.parallax = new ParallaxViews({
 			rootView: this.rootView
 		});
 
 		this.platforms = new PlatformViews({
 			parent: this.rootView,
-			zIndex: Z_PLATFORMS,
-			width: 1,
-			height: 1,
-			canHandleEvents: false,
-			blockEvents: true
+			zIndex: Z_PLATFORMS
 		});
 	};
 
 	this.resetView = function() {
 		model.reset();
+		this.player.reset(model.player.config);
 		this.parallax.reset(this._getParallaxConfig());
 		this.platforms.reset();
 	};
@@ -61,8 +65,13 @@ exports = Class(View, function(supr) {
 	this.constructView = function() {};
 	this.deconstructView = function(cb) { cb && cb(); };
 
+	this.onInputSelect = function() {
+		model.player.jump();
+	};
+
 	this.tick = function(dt) {
 		var offsetX = model.step(dt);
+		this.player.update(dt, offsetX, model.player);
 		this.parallax.update(dt, offsetX);
 		this.platforms.update(dt, offsetX, model.getPlatformModels());
 	};

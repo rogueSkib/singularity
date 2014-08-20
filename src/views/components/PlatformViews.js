@@ -12,6 +12,7 @@ exports = Class(View, function(supr) {
 	});
 
 	this.init = function(opts) {
+		opts.width = opts.height = 1;
 		supr(this, 'init', arguments);
 	};
 
