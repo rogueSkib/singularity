@@ -5,6 +5,15 @@ import ui.resource.Image as Image;
 import src.lib.utils as utils;
 import src.lib.ModelPool as ModelPool;
 
+var random = Math.random;
+var rollInt = utils.rollInt;
+var rollFloat = utils.rollFloat;
+
+var BG_WIDTH = G_BG_WIDTH;
+var BG_HEIGHT = G_BG_HEIGHT;
+
+var imgCache = {};
+
 var PlatformModel = Class(function() {
 	this.init = function() {
 		this.x = 0;
@@ -36,14 +45,6 @@ var PlatformModel = Class(function() {
 });
 
 exports = Class(function() {
-	var random = Math.random;
-	var rollInt = utils.rollInt;
-	var rollFloat = utils.rollFloat;
-
-	var BG_WIDTH = G_BG_WIDTH;
-	var BG_HEIGHT = G_BG_HEIGHT;
-
-	var imgCache = {};
 	var platformPool = new ModelPool({
 		ctor: PlatformModel
 	});
@@ -59,8 +60,8 @@ exports = Class(function() {
 		platformPool.releaseAllModels();
 		// process new image data
 		for (var i = 0, ilen = config.length; i < ilen; i++) {
-			var conf = config[i];
-			!imgCache[conf.image] && this._prepImageData(conf);
+			var platConf = config[i];
+			!imgCache[platConf.image] && this._prepImageData(platConf);
 		}
 		// track offset for spawn timing
 		this.lastX = 0;

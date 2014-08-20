@@ -5,17 +5,33 @@ import ui.ViewPool as ViewPool;
 
 import src.lib.utils as utils;
 
+var random = Math.random;
+var rollInt = utils.rollInt;
+var rollFloat = utils.rollFloat;
+
+var BG_WIDTH = G_BG_WIDTH;
+var BG_HEIGHT = G_BG_HEIGHT;
+
+var imgCache = {};
+
+var ParallaxLayer = Class(View, function(supr) {
+	this.init = function() {
+		supr(this, 'init', arguments);
+
+		this.config = null;
+		this.spawnX = 0;
+		this.pieces = [];
+	};
+
+	this.reset = function(config) {
+		this.config = config;
+		this.spawnX = 0;
+	};
+});
+
 exports = Class(function() {
-	var random = Math.random;
-	var rollInt = utils.rollInt;
-	var rollFloat = utils.rollFloat;
-
-	var BG_WIDTH = G_BG_WIDTH;
-	var BG_HEIGHT = G_BG_HEIGHT;
-
-	var imgCache = {};
 	var layerPool = new ViewPool({
-		ctor: View,
+		ctor: ParallaxLayer,
 		initCount: 5
 	});
 	var piecePool = new ViewPool({
@@ -47,19 +63,17 @@ exports = Class(function() {
 		}
 		// initialize parallax layers based on config
 		for (var i = 0, ilen = config.length; i < ilen; i++) {
-			var conf = config[i];
+			var layerConf = config[i];
 			var layer = layerPool.obtainView({
 				parent: this.rootView,
-				width: conf.width || 1,
-				height: conf.height || 1,
-				zIndex: conf.zIndex || 1
+				width: layerConf.width || 1,
+				height: layerConf.height || 1,
+				zIndex: layerConf.zIndex || 1
 			});
-			layer.config = conf;
-			layer.spawnX = 0;
-			layer.pieces = [];
+			layer.reset(layerConf);
 			layers.push(layer);
 			// process parallax layer image data
-			var pieces = conf.pieces;
+			var pieces = layerConf.pieces;
 			for (var j = 0, jlen = pieces.length; j < jlen; j++) {
 				var piece = pieces[j];
 				!imgCache[piece.image] && this._prepImageData(piece);
