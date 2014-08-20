@@ -1,6 +1,7 @@
 exports = {
 	rogue: {
 		gravity: 0.0005,
+		vx: 1,
 		vyJump: -0.4,
 		hitX: 32,
 		hitY: 32,
