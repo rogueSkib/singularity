@@ -1,6 +1,6 @@
 // PhysicalEvents are applied to PhysicalModels as deltas
 var PhysicalEvent = Class(function() {
-	this.init = function() {
+	this.init = function(opts) {
 		this.x = 0;
 		this.y = 0;
 		this.vx = 0;
@@ -12,12 +12,15 @@ var PhysicalEvent = Class(function() {
 		this.mass = 0;
 		this.delay = 0;
 		this.elapsed = 0;
+		this.isLoaded = false;
+		this.load(opts);
 	};
 
 	this.load = function(values) {
 		for (var v in values) {
 			this[v] = values[v];
 		}
+		this.isLoaded = true;
 	};
 });
 
@@ -41,8 +44,9 @@ exports = Class(function() {
 		this.fx = 0;
 		this.fy = 0;
 		this.mass = 0;
-		this.events = {};
-		this._eventsLoaded = false;
+		this.actions = {};
+		this._history = {};
+		this._blockers = {};
 		this._evtQueue = [];
 	};
 
@@ -64,31 +68,29 @@ exports = Class(function() {
 		this.fx = 0;
 		this.fy = 0;
 		this.mass = 0;
-
-		if (!config || !config.events) {
-			this.events = {};
-		} else if (!this._eventsLoaded || config.reloadEvents) {
-			this._parseConfigEvents(config.events);
-		}
-
+		this.actions = {};
+		this._history = {};
+		this._blockers = {};
 		this._evtQueue = [];
+
+		if (config) {
+			this._parseActions(config.actions);
+		}
 	};
 
-	this._parseConfigEvents = function(evtData) {
-		// reset and load new events from config
-		var events = this.events = {};
-		for (var id in evtData) {
-			var data = evtData[id];
-			var evtList = events[id] = [];
-			var evtListConf = data.events;
-			// each event is actually an array of timed events
-			for (var i = 0, len = evtListConf.length; i < len; i++) {
-				var evt = new PhysicalEvent();
-				evt.load(evtListConf[i]);
-				evtList.push(evt);
+	this._parseActions = function(actionList) {
+		var actions = this.actions;
+		for (var i = 0, ilen = actionList.length; i < ilen; i++) {
+			var action = actionList[i];
+			actions[action.id] = action;
+			var events = action.events;
+			for (var j = 0, jlen = events.length; j < jlen; j++) {
+				var evt = events[j];
+				if (!evt.isLoaded) {
+					events[j] = this.getEvent(evt);
+				}
 			}
 		}
-		this._eventsLoaded = true;
 	};
 
 	this.step = function(dt) {
@@ -124,15 +126,51 @@ exports = Class(function() {
 		}
 	};
 
-	this.applyEvent = function(evtList) {
-		for (var i = 0, len = evtList.length; i < len; i++) {
-			var evt = evtList[i];
-			if (evt.delay > 0) {
-				evt.elapsed = 0;
-				this._evtQueue.push(evt);
+	this.applyAction = function(action) {
+		if (this.isActionBlocked(action)) {
+			return;
+		}
+
+		var blocks = action.blocks;
+		for (var i = 0, ilen = blocks.length; i < ilen; i++) {
+			var block = blocks[i];
+			var id = block.id;
+			var duration = block.duration;
+			if (id) {
+				this._blockers[id] = duration;
 			} else {
-				this._applyEvent(evt);
+				this._blockers[block.type] = duration;
 			}
+		}
+
+		var events = action.events;
+		for (var j = 0, jlen = events.length; j < jlen; j++) {
+			this.applyEvent(events[j]);
+		}
+
+		var now = Date.now();
+		this._history[action.id] = now;
+		this._history[action.type] = now;
+	};
+
+	this.isActionBlocked = function(action) {
+		var now = Date.now();
+		return this._isActionBlocked(action.id, now)
+			|| this._isActionBlocked(action.type, now);
+	};
+
+	this._isActionBlocked = function(name, time) {
+		var last = this._history[name];
+		var duration = this._blockers[name];
+		return last && duration && time <= last + duration;
+	};
+
+	this.applyEvent = function(evt) {
+		if (evt.delay > 0) {
+			evt.elapsed = 0;
+			this._evtQueue.push(evt);
+		} else {
+			this._applyEvent(evt);
 		}
 	};
 
@@ -148,7 +186,7 @@ exports = Class(function() {
 		this.mass += evt.mass;
 	};
 
-	this.getEvent = function() {
-		return new PhysicalEvent();
+	this.getEvent = function(opts) {
+		return new PhysicalEvent(opts);
 	};
 });

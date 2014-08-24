@@ -26,7 +26,7 @@ var PlatformModel = Class(PhysicalModel, function(supr) {
 	};
 
 	this.reset = function(x, y, w, h, hx, hy, hw, hh, imgData) {
-		supr(this, 'reset', arguments);
+		supr(this, 'reset', null);
 
 		this.x = x;
 		this.y = y;

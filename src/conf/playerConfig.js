@@ -13,20 +13,27 @@ exports = {
 		fxRun: 0.0003744,
 		fxDrag: 0.0000699,
 		image: "resources/images/game/players/rogue/rogue.png",
-		reloadEvents: true,
-		events: {
-			'jump1': {
+		actions: [
+			{
+				id: 'jump1',
+				type: 'jump',
+				blocks: [
+					{ type: 'jump', duration: 500 }
+				],
 				events: [
 					{ vy: -0.18, fy: -0.52, delay: 0 },
 					{ fy: 0.52, delay: 80 }
 				]
 			},
-			'jump2': {
+			{
+				id: 'jump2',
+				type: 'jump',
+				blocks: [],
 				events: [
-					{ vy: -0.24, fy: -0.26, delay: 0 },
+					{ vy: -0.36, fy: -0.26, delay: 0 },
 					{ fy: 0.26, delay: 80 }
 				]
 			}
-		}
+		]
 	}
 };
