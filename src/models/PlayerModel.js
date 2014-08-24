@@ -8,21 +8,20 @@ exports = Class(PhysicalModel, function(supr) {
 	this.init = function() {
 		supr(this, 'init', arguments);
 
+		// config properties
 		this.fxRun = 0;
 		this.fxDrag = 0;
-		this.fyJump = 0;
-		this.fyJumpDuration = 0;
-		this.fyJump2 = 0;
-		this.fyJump2Duration = 0;
+		this.image = "";
+		// everything else
 		this.fyGravity = 0;
 		this.jumpCount = 0;
-		this.image = "";
 	};
 
 	this.reset = function(config) {
 		supr(this, 'reset', arguments);
 
 		// apply config
+		this.x = config.x;
 		this.y = config.y;
 		this.w = config.w;
 		this.h = config.h;
@@ -34,15 +33,11 @@ exports = Class(PhysicalModel, function(supr) {
 		this.mass = config.mass;
 		this.fxRun = config.fxRun;
 		this.fxDrag = config.fxDrag;
-		this.fyJump = config.fyJump;
-		this.fyJumpDuration = config.fyJumpDuration;
-		this.fyJump2 = config.fyJump2;
-		this.fyJump2Duration = config.fyJump2Duration;
-		this.fyGravity = this.mass * GRAVITY_ACCEL;
 		this.image = config.image;
+		this.fyGravity = this.mass * GRAVITY_ACCEL;
 
 		// apply gravitational force
-		this.applyForceY(this.fyGravity, 0);
+		this.fy = this.fyGravity;
 	};
 
 	this.step = function(dt) {
@@ -52,13 +47,9 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.jump = function() {
-		if (this.jumpCount === 0) {
-			this.applyForceY(this.fyJump, 0);
-			this.applyForceY(-this.fyJump, this.fyJumpDuration);
-		} else if (this.jumpCount === 1) {
-			this.applyForceY(this.fyJump2, 0);
-			this.applyForceY(-this.fyJump2, this.fyJump2Duration);
-		}
+		var jumpEventID = 'jump' + (this.jumpCount + 1);
+		var evtList = this.events[jumpEventID];
+		evtList && this.applyEvent(evtList);
 		this.jumpCount++;
 	};
 });
