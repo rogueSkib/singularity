@@ -1,10 +1,10 @@
 exports = {
 	base: [
 		{
-			hitX: 0,
-			hitY: 18,
-			viewX: 0,
-			viewY: 450,
+			x: 0,
+			y: 450,
+			hx: 0,
+			hy: 18,
 			gapChance: 0.1,
 			gapMin: 200,
 			gapMax: 400,

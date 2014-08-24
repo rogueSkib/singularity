@@ -1,54 +1,64 @@
-exports = Class(function() {
+import src.models.PhysicalModel as PhysicalModel;
+
+exports = Class(PhysicalModel, function(supr) {
+	var pow = Math.pow;
+
+	var GRAVITY_ACCEL = G_GRAVITY_ACCEL;
+
 	this.init = function() {
-		this.x = 0;
-		this.y = 0;
-		this.vx = 0;
-		this.vy = 0;
-		this.ax = 0;
-		this.ay = 0;
-		this.lastX = 0;
-		this.lastY = 0;
-		this.hitX = 0;
-		this.hitY = 0;
-		this.hitEndX = 0;
-		this.hitEndY = 0;
-		this.vyJump = 0;
-		this.config = null;
+		supr(this, 'init', arguments);
+
+		this.fxRun = 0;
+		this.fxDrag = 0;
+		this.fyJump = 0;
+		this.fyJumpDuration = 0;
+		this.fyJump2 = 0;
+		this.fyJump2Duration = 0;
+		this.fyGravity = 0;
+		this.jumpCount = 0;
+		this.image = "";
 	};
 
 	this.reset = function(config) {
-		this.x = 0;
-		this.y = 0;
+		supr(this, 'reset', arguments);
+
+		// apply config
+		this.y = config.y;
+		this.w = config.w;
+		this.h = config.h;
+		this.hx = config.hx;
+		this.hy = config.hy;
+		this.hw = config.hw;
+		this.hh = config.hh;
 		this.vx = config.vx;
-		this.vy = 0;
-		this.ax = 0;
-		this.ay = config.gravity;
-		this.lastX = 0;
-		this.lastY = 0;
-		this.hitX = config.hitX;
-		this.hitY = config.hitY;
-		this.hitEndX = config.hitX + config.hitWidth;
-		this.hitEndY = config.hitY + config.hitHeight;
-		this.vyJump = config.vyJump;
-		this.config = config;
+		this.mass = config.mass;
+		this.fxRun = config.fxRun;
+		this.fxDrag = config.fxDrag;
+		this.fyJump = config.fyJump;
+		this.fyJumpDuration = config.fyJumpDuration;
+		this.fyJump2 = config.fyJump2;
+		this.fyJump2Duration = config.fyJump2Duration;
+		this.fyGravity = this.mass * GRAVITY_ACCEL;
+		this.image = config.image;
+
+		// apply gravitational force
+		this.applyForceY(this.fyGravity, 0);
 	};
 
 	this.step = function(dt) {
-		// horizontal movements
-		this.lastX = this.x;
-		this.x += dt * this.vx / 2;
-		this.vx += dt * this.ax;
-		this.x += dt * this.vx / 2;
-		// vertical movement
-		this.lastY = this.y;
-		this.y += dt * this.vy / 2;
-		this.vy += dt * this.ay;
-		this.y += dt * this.vy / 2;
+		this.fx = this.fxRun - this.fxDrag * pow(this.vx, 2);
 
-		return this.x;
+		supr(this, 'step', arguments);
 	};
 
 	this.jump = function() {
-		this.vy = this.vyJump;
+		if (this.jumpCount === 0) {
+			this.applyForceY(this.fyJump, 0);
+			this.applyForceY(-this.fyJump, this.fyJumpDuration);
+		} else if (this.jumpCount === 1) {
+			this.applyForceY(this.fyJump2, 0);
+			this.applyForceY(-this.fyJump2, this.fyJump2Duration);
+		}
+		this.jumpCount++;
 	};
 });

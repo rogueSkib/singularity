@@ -2,8 +2,8 @@ import timer;
 
 exports = Class(function() {
 	var min = Math.min;
-	var MIN_TICK = 1;
-	var MAX_TICK = 100;
+	var MIN_TICK = G_MIN_TICK;
+	var MAX_TICK = G_MAX_TICK;
 	var TICK_MOD = 500;
 	var DT_MULTIPLIER = 1;
 

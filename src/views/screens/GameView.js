@@ -53,9 +53,11 @@ exports = Class(View, function(supr) {
 
 	this.resetView = function() {
 		model.reset();
-		this.player.reset(model.player.config);
+		this.player.reset(model.player);
 		this.parallax.reset(this._getParallaxConfig());
 		this.platforms.reset();
+
+		this.gameOver = false;
 	};
 
 	this._getParallaxConfig = function() {
@@ -69,10 +71,19 @@ exports = Class(View, function(supr) {
 		model.player.jump();
 	};
 
+	this.onGameOver = function() {
+		this.gameOver = true;
+		setTimeout(bind(this, 'resetView'), 1000);
+	};
+
 	this.tick = function(dt) {
 		var offsetX = model.step(dt);
 		this.player.update(dt, offsetX, model.player);
 		this.parallax.update(dt, offsetX);
 		this.platforms.update(dt, offsetX, model.getPlatformModels());
+		// game over check
+		if (model.gameOver && !this.gameOver) {
+			this.onGameOver();
+		}
 	};
 });

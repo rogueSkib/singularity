@@ -7,8 +7,6 @@ exports = Class(View, function(supr) {
 		opts.width = opts.height = 1;
 		supr(this, 'init', arguments);
 
-		this.config = null;
-
 		this.designView();
 	};
 
@@ -16,16 +14,14 @@ exports = Class(View, function(supr) {
 		this.image = new ImageView({ parent: this, width: 1, height: 1 });
 	};
 
-	this.reset = function(config) {
-		this.config = config;
+	this.reset = function(model) {
 		var s = this.style;
 		s.x = 0;
 		s.y = 0;
-		var img = this.image;
-		var is = img.style;
-		is.width = config.viewWidth;
-		is.height = config.viewHeight;
-		img.setImage(config.image);
+		var is = this.image.style;
+		is.width = model.w;
+		is.height = model.h;
+		this.image.setImage(model.image);
 	};
 
 	this.update = function(dt, offsetX, model) {

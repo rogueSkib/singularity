@@ -4,6 +4,7 @@ import ui.resource.Image as Image;
 
 import src.lib.utils as utils;
 import src.lib.ModelPool as ModelPool;
+import src.models.PhysicalModel as PhysicalModel;
 
 var random = Math.random;
 var rollInt = utils.rollInt;
@@ -14,31 +15,27 @@ var BG_HEIGHT = G_BG_HEIGHT;
 
 var imgCache = {};
 
-var PlatformModel = Class(function() {
+var PlatformModel = Class(PhysicalModel, function(supr) {
 	this.init = function() {
-		this.x = 0;
-		this.y = 0;
-		this.width = 0;
-		this.height = 0;
-		this.hitX = 0;
-		this.hitY = 0;
-		this.hitWidth = 0;
-		this.hitHeight = 0;
+		supr(this, 'init', arguments);
+
 		this.imgData = null;
 		this.active = false;
 		this.view = null;
 		this._poolIndex = -1;
 	};
 
-	this.reset = function(x, y, w, h, hX, hY, hW, hH, imgData) {
+	this.reset = function(x, y, w, h, hx, hy, hw, hh, imgData) {
+		supr(this, 'reset', arguments);
+
 		this.x = x;
 		this.y = y;
-		this.width = w;
-		this.height = h;
-		this.hitX = hX;
-		this.hitY = hY;
-		this.hitWidth = hW;
-		this.hitHeight = hH;
+		this.w = w;
+		this.h = h;
+		this.hx = hx;
+		this.hy = hy;
+		this.hw = hw;
+		this.hh = hh;
 		this.imgData = imgData;
 		this.view = null;
 	};
@@ -73,8 +70,8 @@ exports = Class(function() {
 		var img = imgData.image = new Image({ url: data.image });
 		var b = img.getBounds();
 		imgData.y = data.y || 0;
-		imgData.width = data.width || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
-		imgData.height = data.height || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
+		imgData.w = data.w || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
+		imgData.h = data.h || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
 	};
 
 	this.step = function(dt, x) {
@@ -91,7 +88,7 @@ exports = Class(function() {
 			var model = models[i];
 			if (!model.active) {
 				break;
-			} else if (model.x + model.width <= x) {
+			} else if (model.x + model.w <= x) {
 				platformPool.releaseModel(model);
 				i--;
 			}
@@ -107,16 +104,16 @@ exports = Class(function() {
 			var spawnGap = random() < pData.gapChance;
 			var gap = spawnGap ? rollInt(pData.gapMin, pData.gapMax) : 0;
 			var model = platformPool.obtainModel();
-			var pX = this.spawnX + (pData.viewX || 0);
-			var pY = pData.viewY || 0;
-			var pW = iData.width;
-			var pH = iData.height;
-			var hX = pData.hitX || 0;
-			var hY = pData.hitY || 0;
-			var hW = pData.hitWidth || pW;
-			var hH = pData.hitHeight || pH;
-			model.reset(pX, pY, pW, pH, hX, hY, hW, hH, iData);
-			this.spawnX += pW + gap;
+			var px = this.spawnX + (pData.x || 0);
+			var py = pData.y || 0;
+			var pw = iData.w;
+			var ph = iData.h;
+			var hx = pData.hx || 0;
+			var hy = pData.hy || 0;
+			var hw = pData.hw || pw;
+			var hh = pData.hh || ph;
+			model.reset(px, py, pw, ph, hx, hy, hw, hh, iData);
+			this.spawnX += pw + gap;
 		}
 	};
 

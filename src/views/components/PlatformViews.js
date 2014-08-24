@@ -37,8 +37,8 @@ exports = Class(View, function(supr) {
 			parent: this,
 			x: model.x,
 			y: model.y,
-			width: model.width,
-			height: model.height
+			width: model.w,
+			height: model.h
 		});
 		view.setImage(model.imgData.image);
 		model.view = view;
