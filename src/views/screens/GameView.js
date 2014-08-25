@@ -5,6 +5,7 @@ import src.conf.parallaxConfig as parallaxConfig;
 import src.views.components.PlayerView as PlayerView;
 import src.views.components.ParallaxViews as ParallaxViews;
 import src.views.components.PlatformViews as PlatformViews;
+import src.views.components.StatusViews as StatusViews;
 
 exports = Class(View, function(supr) {
 	var controller;

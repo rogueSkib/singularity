@@ -16,6 +16,7 @@ exports = {
 		healthRegen: 0,
 		energy: 100,
 		energyRegen: 0.004,
+		deJump: -12.5,
 		image: "resources/images/game/players/rogue/rogue.png",
 		actions: [
 			{
