@@ -12,13 +12,22 @@ var PhysicalEvent = Class(function() {
 		this.mass = 0;
 		this.delay = 0;
 		this.elapsed = 0;
+		this.force = false;
+		this.forceValues = null;
 		this.isLoaded = false;
 		this.load(opts);
 	};
 
 	this.load = function(values) {
-		for (var v in values) {
-			this[v] = values[v];
+		if (values.force) {
+			this.force = true;
+			values = merge({}, values);
+			delete values.force;
+			this.forceValues = values;
+		} else {
+			for (var v in values) {
+				this[v] = values[v];
+			}
 		}
 		this.isLoaded = true;
 	};
@@ -126,9 +135,11 @@ exports = Class(function() {
 		}
 	};
 
-	this.applyAction = function(action) {
-		if (this.isActionBlocked(action)) {
-			return;
+	this.applyAction = function(name) {
+		var now = Date.now();
+		var action = this.actions[name];
+		if (!action || this.isActionBlocked(name, now)) {
+			return false;
 		}
 
 		var blocks = action.blocks;
@@ -148,18 +159,12 @@ exports = Class(function() {
 			this.applyEvent(events[j]);
 		}
 
-		var now = Date.now();
 		this._history[action.id] = now;
 		this._history[action.type] = now;
+		return true;
 	};
 
-	this.isActionBlocked = function(action) {
-		var now = Date.now();
-		return this._isActionBlocked(action.id, now)
-			|| this._isActionBlocked(action.type, now);
-	};
-
-	this._isActionBlocked = function(name, time) {
+	this.isActionBlocked = function(name, time) {
 		var last = this._history[name];
 		var duration = this._blockers[name];
 		return last && duration && time <= last + duration;
@@ -175,15 +180,22 @@ exports = Class(function() {
 	};
 
 	this._applyEvent = function(evt) {
-		this.x += evt.x;
-		this.y += evt.y;
-		this.vx += evt.vx;
-		this.vy += evt.vy;
-		this.ax += evt.ax;
-		this.ay += evt.ay;
-		this.fx += evt.fx;
-		this.fy += evt.fy;
-		this.mass += evt.mass;
+		if (evt.force) {
+			var values = evt.forceValues;
+			for (var v in values) {
+				this[v] = values[v];
+			}
+		} else {
+			this.x += evt.x;
+			this.y += evt.y;
+			this.vx += evt.vx;
+			this.vy += evt.vy;
+			this.ax += evt.ax;
+			this.ay += evt.ay;
+			this.fx += evt.fx;
+			this.fy += evt.fy;
+			this.mass += evt.mass;
+		}
 	};
 
 	this.getEvent = function(opts) {

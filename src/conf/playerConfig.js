@@ -18,11 +18,11 @@ exports = {
 				id: 'jump1',
 				type: 'jump',
 				blocks: [
-					{ type: 'jump', duration: 500 }
+					{ type: 'jump', duration: 250 }
 				],
 				events: [
-					{ vy: -0.18, fy: -0.52, delay: 0 },
-					{ fy: 0.52, delay: 80 }
+					{ vy: -0.18, fy: -0.42 },
+					{ fy: 0.42, delay: 80 }
 				]
 			},
 			{
@@ -30,8 +30,9 @@ exports = {
 				type: 'jump',
 				blocks: [],
 				events: [
-					{ vy: -0.36, fy: -0.26, delay: 0 },
-					{ fy: 0.26, delay: 80 }
+					{ vy: 0, ay: 0, force: true },
+					{ vy: -0.16, fy: -0.38 },
+					{ fy: 0.38, delay: 80 }
 				]
 			}
 		]

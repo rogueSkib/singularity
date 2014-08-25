@@ -47,8 +47,6 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.jump = function() {
-		var action = this.actions['jump' + (this.jumpCount + 1)];
-		action && this.applyAction(action);
-		this.jumpCount++;
+		this.applyAction('jump' + (this.jumpCount + 1)) && this.jumpCount++;
 	};
 });
