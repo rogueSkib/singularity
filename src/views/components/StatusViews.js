@@ -92,8 +92,8 @@ exports = Class(ImageView, function(supr) {
 		var initialEnergy = ecs.width;
 		this.healthTargetPct = model.health / model.healthMax;
 		this.energyTargetPct = model.energy / model.energyMax;
-		this.healthPct = (this.healthTargetPct + 5 * this.healthPct) / 6;
-		this.energyPct = (this.energyTargetPct + 5 * this.energyPct) / 6;
+		this.healthPct = (this.healthTargetPct + 8 * this.healthPct) / 9;
+		this.energyPct = (this.energyTargetPct + 8 * this.energyPct) / 9;
 
 		if (this.healthPct) {
 			hcs.width = HEALTH_X + this.healthPct * HEALTH_FILL;
@@ -115,9 +115,9 @@ exports = Class(ImageView, function(supr) {
 		}
 
 		var de = ecs.width - initialEnergy;
-		if (de > 0.1) {
+		if (de > 0.05) {
 			this.emitGainParticle(ecs.width, ENERGY_Y, SPARK_ENERGY);
-		} else if (de < -0.1) {
+		} else if (de < -0.05) {
 			this.emitLossParticle(ecs.width, ENERGY_Y, SPARK_ENERGY);
 		}
 

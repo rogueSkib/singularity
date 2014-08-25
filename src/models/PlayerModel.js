@@ -19,6 +19,7 @@ exports = Class(PhysicalModel, function(supr) {
 		this.energyMax = 0;
 		this.energyRegen = 0;
 		this.deJump = 0;
+		this.deDive = 0;
 		this.image = "";
 
 		this.fyGravity = 0;
@@ -48,6 +49,7 @@ exports = Class(PhysicalModel, function(supr) {
 		this.energyMax = config.energy;
 		this.energyRegen = config.energyRegen;
 		this.deJump = config.deJump;
+		this.deDive = config.deDive;
 		this.image = config.image;
 
 		// apply gravitational force
@@ -72,10 +74,22 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.jump = function() {
-		if (this.energy + this.deJump >= 0) {
-			var success = this.applyAction('jump' + (this.jumpCount + 1));
+		var action = '';
+		var success = false;
+		var deltaEnergy = 0;
+		var jumpCount = this.jumpCount;
+		if (jumpCount < 2) {
+			action = 'jump' + (jumpCount + 1);
+			deltaEnergy = this.deJump;
+		} else if (jumpCount < 3) {
+			action = 'dive';
+			deltaEnergy = this.deDive;
+		}
+
+		if (action && this.energy + deltaEnergy >= 0) {
+			success = this.applyAction(action);
 			if (success) {
-				this.energy += this.deJump;
+				this.energy += deltaEnergy;
 				this.jumpCount++;
 			}
 		}

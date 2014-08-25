@@ -16,7 +16,8 @@ exports = {
 		healthRegen: 0,
 		energy: 100,
 		energyRegen: 0.004,
-		deJump: -12.5,
+		deJump: -5,
+		deDive: -10,
 		image: "resources/images/game/players/rogue/rogue.png",
 		actions: [
 			{
@@ -38,6 +39,16 @@ exports = {
 					{ vy: 0, ay: 0, force: true },
 					{ vy: -0.16, fy: -0.38 },
 					{ fy: 0.38, delay: 80 }
+				]
+			},
+			{
+				id: 'dive',
+				type: 'dive',
+				blocks: [],
+				events: [
+					{ vy: 0.37, ay: 0, force: true },
+					{ fy: 0.64 },
+					{ fy: -0.64, delay: 80 }
 				]
 			}
 		]
