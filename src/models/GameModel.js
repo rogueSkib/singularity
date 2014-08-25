@@ -20,14 +20,15 @@ exports = Class(function() {
 	};
 
 	this.step = function(dt) {
+		var player = this.player;
 		// update models
-		this.player.step(dt);
-		var offsetX = this.player.x;
+		player.step(dt);
+		var offsetX = player.x;
 		this.platforms.step(dt, offsetX);
 		// models interact with each other
-		this.doVertCollisions(this.player);
+		this.doVertCollisions(player);
 		// game over check
-		if (this.player.y > MODEL_HEIGHT) {
+		if (player.y > MODEL_HEIGHT || player.health <= 0) {
 			this.gameOver = true;
 		}
 		return offsetX;

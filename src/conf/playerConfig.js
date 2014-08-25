@@ -12,6 +12,10 @@ exports = {
 		mass: 80,
 		fxRun: 0.0003744,
 		fxDrag: 0.0000699,
+		health: 100,
+		healthRegen: 0,
+		energy: 100,
+		energyRegen: 0.004,
 		image: "resources/images/game/players/rogue/rogue.png",
 		actions: [
 			{
