@@ -13,6 +13,7 @@ exports = Class(View, function(supr) {
 
 	var BG_WIDTH = G_BG_WIDTH;
 	var BG_HEIGHT = G_BG_HEIGHT;
+	var Z_UI = 500;
 	var Z_PLAYER = 110;
 	var Z_PLATFORMS = 100;
 
@@ -29,8 +30,6 @@ exports = Class(View, function(supr) {
 		var s = this.style;
 		this.rootView = new View({
 			parent: this,
-			x: (s.width - BG_WIDTH) / 2,
-			y: (s.height - BG_HEIGHT) / 2,
 			width: BG_WIDTH,
 			height: BG_HEIGHT,
 			canHandleEvents: false,
@@ -50,6 +49,11 @@ exports = Class(View, function(supr) {
 			parent: this.rootView,
 			zIndex: Z_PLATFORMS
 		});
+
+		this.status = new StatusViews({
+			parent: this.rootView,
+			zIndex: Z_UI
+		});
 	};
 
 	this.resetView = function() {
@@ -57,6 +61,7 @@ exports = Class(View, function(supr) {
 		this.player.reset(model.player);
 		this.parallax.reset(this._getParallaxConfig());
 		this.platforms.reset();
+		this.status.reset(model.player);
 
 		this.gameOver = false;
 	};
@@ -82,6 +87,7 @@ exports = Class(View, function(supr) {
 		this.player.update(dt, offsetX, model.player);
 		this.parallax.update(dt, offsetX);
 		this.platforms.update(dt, offsetX, model.getPlatformModels());
+		this.status.update(dt, model.player);
 		// game over check
 		if (model.gameOver && !this.gameOver) {
 			this.onGameOver();
