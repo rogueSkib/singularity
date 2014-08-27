@@ -66,9 +66,9 @@ exports = Class(function() {
 			var layerConf = config[i];
 			var layer = layerPool.obtainView({
 				parent: this.rootView,
-				width: layerConf.width || 1,
-				height: layerConf.height || 1,
-				zIndex: layerConf.zIndex || 1
+				width: layerConf.w || 1,
+				height: layerConf.h || 1,
+				zIndex: layerConf.z || 1
 			});
 			layer.reset(layerConf);
 			layers.push(layer);
@@ -88,8 +88,8 @@ exports = Class(function() {
 		var img = imgData.image = new Image({ url: data.image });
 		var b = img.getBounds();
 		imgData.y = data.y || 0;
-		imgData.width = data.width || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
-		imgData.height = data.height || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
+		imgData.w = data.w || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
+		imgData.h = data.h || b.height + (b.marginTop || 0) + (b.marginBottom || 0);
 	};
 
 	this.update = function(dt, x) {
@@ -123,15 +123,17 @@ exports = Class(function() {
 		while (layer.spawnX <= -x + BG_WIDTH) {
 			var pData = pieces[~~(random() * pieces.length)];
 			var iData = imgCache[pData.image];
+			var gapMin = pData.gapMin || 0;
+			var gapMax = pData.gapMax || 0;
 			var piece = piecePool.obtainView({
 				parent: layer,
 				x: layer.spawnX,
 				y: iData.y,
-				width: iData.width,
-				height: iData.height
+				width: iData.w,
+				height: iData.h
 			});
 			piece.setImage(iData.image);
-			layer.spawnX += iData.width + rollInt(pData.gapMin, pData.gapMax);
+			layer.spawnX += iData.w + rollInt(gapMin, gapMax);
 			layer.pieces.push(piece);
 		}
 	};
