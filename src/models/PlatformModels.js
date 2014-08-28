@@ -7,6 +7,7 @@ import src.lib.ModelPool as ModelPool;
 import src.models.PhysicalModel as PhysicalModel;
 
 var random = Math.random;
+var choose = utils.choose;
 var rollInt = utils.rollInt;
 var rollFloat = utils.rollFloat;
 
@@ -49,6 +50,9 @@ exports = Class(function() {
 	this.init = function() {
 		this.lastX = 0;
 		this.spawnX = 0;
+		this.spawnY = 0;
+		this.lastSpawnType = '';
+		this.lastSpawnData = null;
 		this.config = null;
 	};
 
@@ -56,13 +60,19 @@ exports = Class(function() {
 		this.config = config;
 		platformPool.releaseAllModels();
 		// process new image data
-		for (var i = 0, ilen = config.length; i < ilen; i++) {
-			var platConf = config[i];
-			!imgCache[platConf.image] && this._prepImageData(platConf);
+		for (var type in config) {
+			var typeData = config[type];
+			for (var i = 0, len = typeData.length; i < len; i++) {
+				var platConf = typeData[i];
+				!imgCache[platConf.image] && this._prepImageData(platConf);
+			}
 		}
-		// track offset for spawn timing
+		// track spawn info
 		this.lastX = 0;
 		this.spawnX = 0;
+		this.spawnY = 0;
+		this.lastSpawnType = '';
+		this.lastSpawnData = null;
 	};
 
 	this._prepImageData = function(data) {
@@ -97,15 +107,17 @@ exports = Class(function() {
 
 	this._spawnPlatforms = function(x) {
 		// spawn new platforms as they move on-screen
-		var config = this.config;
 		while (this.spawnX <= x + BG_WIDTH) {
-			var pData = config[~~(random() * config.length)];
+			var pData = this._getSpawn();
 			var iData = imgCache[pData.image];
-			var spawnGap = random() < pData.gapChance;
-			var gap = spawnGap ? rollInt(pData.gapMin, pData.gapMax) : 0;
+			var gData = pData.gap;
+			var gap = gData ? rollInt(gData.min, gData.max) : 0;
 			var model = platformPool.obtainModel();
 			var px = this.spawnX + (pData.x || 0);
-			var py = pData.y || 0;
+			var type = this.lastSpawnType;
+			var py = type === 'start' || type === 'alone'
+				? (pData.y || 0) + random() * (pData.yRange || 0)
+				: this.spawnY;
 			var pw = iData.w;
 			var ph = iData.h;
 			var hx = pData.hx || 0;
@@ -114,7 +126,24 @@ exports = Class(function() {
 			var hh = pData.hh || ph;
 			model.reset(px, py, pw, ph, hx, hy, hw, hh, iData);
 			this.spawnX += pw + gap;
+			this.spawnY = py;
 		}
+	};
+
+	this._getSpawn = function() {
+		var type = 'start';
+		var lastType = this.lastSpawnType;
+		var lastData = this.lastSpawnData;
+		if (lastType === 'start' || lastType === 'middle') {
+			var spawnEnd = random() < lastData.endChance;
+			type = spawnEnd ? 'end' : 'middle';
+		} else if (lastType === 'end' || lastType === 'alone') {
+			var spawnStart = random() < lastData.startChance;
+			type = spawnStart ? 'start' : 'alone';
+		}
+		this.lastSpawnType = type;
+		var data = this.lastSpawnData = choose(this.config[type]);
+		return data;
 	};
 
 	this.getModels = function() {

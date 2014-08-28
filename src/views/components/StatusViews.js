@@ -73,7 +73,7 @@ exports = Class(ImageView, function(supr) {
 			parent: this,
 			width: FRAME_WIDTH,
 			height: FRAME_HEIGHT,
-			initCount: 20
+			initCount: 100
 		});
 	};
 

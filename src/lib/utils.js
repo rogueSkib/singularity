@@ -7,6 +7,11 @@ var log = Math.log;
 var random = Math.random;
 var resourceMap = loader.getMap();
 
+// return a randomly selected item from an array
+exports.choose = function(arr) {
+	return arr[~~(random() * arr.length)];
+};
+
 // copy object properties, without copying other objects or arrays
 exports.copyShallow = function(src, dest, keys) {
 	keys = keys || Object.keys(src);
