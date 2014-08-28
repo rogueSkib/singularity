@@ -62,9 +62,13 @@ exports = Class(function() {
 		// process new image data
 		for (var type in config) {
 			var typeData = config[type];
-			for (var i = 0, len = typeData.length; i < len; i++) {
+			for (var i = 0, ilen = typeData.length; i < ilen; i++) {
 				var platConf = typeData[i];
-				!imgCache[platConf.image] && this._prepImageData(platConf);
+				var images = platConf.images;
+				for (var j = 0, jlen = images.length; j < jlen; j++) {
+					var image = images[j];
+					!imgCache[image] && this._prepImageData(platConf, image);
+				}
 			}
 		}
 		// track spawn info
@@ -75,9 +79,9 @@ exports = Class(function() {
 		this.lastSpawnData = null;
 	};
 
-	this._prepImageData = function(data) {
-		var imgData = imgCache[data.image] = {};
-		var img = imgData.image = new Image({ url: data.image });
+	this._prepImageData = function(data, image) {
+		var imgData = imgCache[image] = {};
+		var img = imgData.image = new Image({ url: image });
 		var b = img.getBounds();
 		imgData.y = data.y || 0;
 		imgData.w = data.w || b.width + (b.marginLeft || 0) + (b.marginRight || 0);
@@ -109,7 +113,7 @@ exports = Class(function() {
 		// spawn new platforms as they move on-screen
 		while (this.spawnX <= x + BG_WIDTH) {
 			var pData = this._getSpawn();
-			var iData = imgCache[pData.image];
+			var iData = imgCache[choose(pData.images)];
 			var gData = pData.gap;
 			var gap = gData ? rollInt(gData.min, gData.max) : 0;
 			var model = platformPool.obtainModel();
