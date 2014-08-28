@@ -8,7 +8,7 @@ exports = {
 				hy: 82,
 				yRange: 100,
 				startChance: 0.8,
-				gap: { min: 200, max: 400 },
+				gap: { min: 150, max: 600 },
 				image: "resources/images/game/levels/base/road_alone_1.png"
 			}
 		],
@@ -42,7 +42,7 @@ exports = {
 				hy: 82,
 				yRange: 100,
 				startChance: 0.6,
-				gap: { min: 200, max: 400 },
+				gap: { min: 150, max: 600 },
 				image: "resources/images/game/levels/base/road_end_1.png"
 			}
 		]
