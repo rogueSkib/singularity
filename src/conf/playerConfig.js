@@ -46,9 +46,20 @@ exports = {
 				type: 'dive',
 				blocks: [],
 				events: [
-					{ vy: 0.37, ay: 0, force: true },
+					{ vy: 0.44, ay: 0, force: true },
 					{ fy: 0.64 },
 					{ fy: -0.64, delay: 80 }
+				]
+			},
+			{
+				id: 'rush',
+				type: 'rush',
+				blocks: [],
+				events: [
+					{ vx: 0.37 },
+					{ vx: -0.37, delay: 400 },
+					{ fx: 0.64 },
+					{ fx: -0.64, delay: 200 }
 				]
 			}
 		]
