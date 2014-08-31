@@ -1,3 +1,6 @@
+var GRAVITY_ACCEL = G_GRAVITY_ACCEL;
+var PLAYER_MASS = 80;
+
 exports = {
 	rogue: {
 		x: 0,
@@ -9,9 +12,9 @@ exports = {
 		hw: 75,
 		hh: 87,
 		vx: 0.67,
-		mass: 80,
+		mass: PLAYER_MASS,
 		fxRun: 0.0003744,
-		fxDrag: 0.0000699,
+		dragRun: 0.0000699,
 		health: 100,
 		healthRegen: 0,
 		energy: 100,
@@ -28,8 +31,8 @@ exports = {
 					{ type: 'jump', duration: 250 }
 				],
 				events: [
-					{ vy: -0.18, fy: -0.42 },
-					{ fy: 0.42, delay: 80 }
+					{ vy: -0.22, fy: -0.46 },
+					{ fy: 0.46, delay: 80 }
 				]
 			},
 			{
@@ -38,16 +41,19 @@ exports = {
 				blocks: [],
 				events: [
 					{ vy: 0, ay: 0, force: true },
-					{ vy: -0.16, fy: -0.38 },
-					{ fy: 0.38, delay: 80 }
+					{ vy: -0.18, fy: -0.42 },
+					{ fy: 0.42, delay: 80 }
 				]
 			},
 			{
 				id: 'dive',
 				type: 'dive',
-				blocks: [],
+				blocks: [
+					{ type: 'dive', duration: 250 },
+					{ type: 'rush', duration: 250 }
+				],
 				events: [
-					{ vy: 0.44, ay: 0, force: true },
+					{ vy: 0.56, ay: 0, force: true },
 					{ fy: 0.64 },
 					{ fy: -0.64, delay: 80 }
 				]
@@ -55,12 +61,17 @@ exports = {
 			{
 				id: 'rush',
 				type: 'rush',
-				blocks: [],
+				blocks: [
+					{ type: 'jump', duration: 500 },
+					{ type: 'dive', duration: 500 },
+					{ type: 'rush', duration: 500 }
+				],
 				events: [
-					{ vx: 0.37 },
-					{ vx: -0.37, delay: 400 },
-					{ fx: 0.64 },
-					{ fx: -0.64, delay: 200 }
+					{ vy: 0, ay: 0, fy: 0, force: true },
+					{ vx: 0.33 },
+					{ vx: 0.33, delay: 80 },
+					{ vx: 0.33, delay: 160 },
+					{ vx: -0.99, fy: PLAYER_MASS * GRAVITY_ACCEL, delay: 500 }
 				]
 			}
 		]
