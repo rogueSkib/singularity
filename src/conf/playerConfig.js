@@ -1,13 +1,13 @@
 exports = {
 	rogue: {
 		x: 0,
-		y: 200,
-		w: 164,
-		h: 164,
-		hx: 32,
-		hy: 32,
-		hw: 100,
-		hh: 116,
+		y: 240,
+		w: 123,
+		h: 123,
+		hx: 24,
+		hy: 24,
+		hw: 75,
+		hh: 87,
 		vx: 0.67,
 		mass: 80,
 		fxRun: 0.0003744,
@@ -18,6 +18,7 @@ exports = {
 		energyRegen: 0.004,
 		deJump: -5,
 		deDive: -10,
+		deRush: -10,
 		image: "resources/images/game/players/rogue/rogue.png",
 		actions: [
 			{
