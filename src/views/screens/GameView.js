@@ -6,6 +6,7 @@ import src.views.components.PlayerView as PlayerView;
 import src.views.components.ParallaxViews as ParallaxViews;
 import src.views.components.PlatformViews as PlatformViews;
 import src.views.components.StatusViews as StatusViews;
+import src.views.components.InputView as InputView;
 
 exports = Class(View, function(supr) {
 	var controller;
@@ -54,6 +55,13 @@ exports = Class(View, function(supr) {
 			parent: this.rootView,
 			zIndex: Z_UI
 		});
+
+		this.inputView = new InputView({
+			parent: this,
+			model: model,
+			width: BG_WIDTH,
+			height: BG_HEIGHT
+		});
 	};
 
 	this.resetView = function() {
@@ -72,10 +80,6 @@ exports = Class(View, function(supr) {
 
 	this.constructView = function() {};
 	this.deconstructView = function(cb) { cb && cb(); };
-
-	this.onInputSelect = function() {
-		model.player.jump();
-	};
 
 	this.onGameOver = function() {
 		this.gameOver = true;
