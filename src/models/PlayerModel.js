@@ -11,7 +11,7 @@ exports = Class(PhysicalModel, function(supr) {
 		supr(this, 'init', arguments);
 
 		this.fxRun = 0;
-		this.fxDrag = 0;
+		this.dragRun = 0;
 		this.health = 0;
 		this.healthMax = 0;
 		this.healthRegen = 0;
@@ -41,7 +41,7 @@ exports = Class(PhysicalModel, function(supr) {
 		this.vx = config.vx;
 		this.mass = config.mass;
 		this.fxRun = config.fxRun;
-		this.fxDrag = config.fxDrag;
+		this.dragRun = config.dragRun;
 		this.health = config.health;
 		this.healthMax = config.health;
 		this.healthRegen = config.healthRegen;
@@ -50,6 +50,7 @@ exports = Class(PhysicalModel, function(supr) {
 		this.energyRegen = config.energyRegen;
 		this.deJump = config.deJump;
 		this.deDive = config.deDive;
+		this.deRush = config.deRush;
 		this.image = config.image;
 
 		// apply gravitational force
@@ -58,14 +59,13 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.step = function(dt) {
-		this._updateRunPhysics(dt);
 		this._updateStatus(dt);
 
+		// run force varies each tick, so remove it before next tick
+		var fxRun = this.fxRun - this.dragRun * pow(this.vx, 2);
+		this.fx += fxRun;
 		supr(this, 'step', arguments);
-	};
-
-	this._updateRunPhysics = function(dt) {
-		this.fx = this.fxRun - this.fxDrag * pow(this.vx, 2);
+		this.fx -= fxRun;
 	};
 
 	this._updateStatus = function(dt) {
@@ -74,11 +74,26 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.jump = function() {
-		var action = 'jump' + (this.jumpCount + 1);
 		if (this.energy + this.deJump >= 0) {
-			if (this.applyAction(action)) {
+			if (this.applyAction('jump' + (this.jumpCount + 1))) {
 				this.energy += this.deJump;
 				this.jumpCount++;
+			}
+		}
+	};
+
+	this.dive = function() {
+		if (this.energy + this.deDive >= 0) {
+			if (this.applyAction('dive')) {
+				this.energy += this.deDive;
+			}
+		}
+	};
+
+	this.rush = function() {
+		if (this.energy + this.deRush >= 0) {
+			if (this.applyAction('rush')) {
+				this.energy += this.deRush;
 			}
 		}
 	};
