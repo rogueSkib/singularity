@@ -74,22 +74,10 @@ exports = Class(PhysicalModel, function(supr) {
 	};
 
 	this.jump = function() {
-		var action = '';
-		var success = false;
-		var deltaEnergy = 0;
-		var jumpCount = this.jumpCount;
-		if (jumpCount < 2) {
-			action = 'jump' + (jumpCount + 1);
-			deltaEnergy = this.deJump;
-		} else if (jumpCount < 3) {
-			action = 'dive';
-			deltaEnergy = this.deDive;
-		}
-
-		if (action && this.energy + deltaEnergy >= 0) {
-			success = this.applyAction(action);
-			if (success) {
-				this.energy += deltaEnergy;
+		var action = 'jump' + (this.jumpCount + 1);
+		if (this.energy + this.deJump >= 0) {
+			if (this.applyAction(action)) {
+				this.energy += this.deJump;
 				this.jumpCount++;
 			}
 		}
