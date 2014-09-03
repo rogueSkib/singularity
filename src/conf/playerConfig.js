@@ -68,10 +68,17 @@ exports = {
 				],
 				events: [
 					{ vy: 0, ay: 0, fy: 0, force: true },
-					{ vx: 0.33 },
-					{ vx: 0.33, delay: 80 },
-					{ vx: 0.33, delay: 160 },
-					{ vx: -0.99, fy: PLAYER_MASS * GRAVITY_ACCEL, delay: 500 }
+					{ vx: 0.4 },
+					{ vx: 0.2, delay: 40 },
+					{ vx: 0.2, delay: 80 },
+					{ vx: 0.2, delay: 120 },
+					{ vx: 0.2, delay: 160 },
+					{ vx: -0.2, delay: 400 },
+					{ vx: -0.2, delay: 420 },
+					{ vx: -0.2, delay: 440 },
+					{ vx: -0.2, delay: 460 },
+					{ vx: -0.2, delay: 480 },
+					{ vx: -0.2, fy: PLAYER_MASS * GRAVITY_ACCEL, delay: 500 }
 				]
 			}
 		]
