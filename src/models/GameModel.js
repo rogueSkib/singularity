@@ -1,7 +1,9 @@
 import src.conf.playerConfig as playerConfig;
 import src.conf.platformConfig as platformConfig;
+import src.conf.enemyConfig as enemyConfig;
 import src.models.PlayerModel as PlayerModel;
 import src.models.PlatformModels as PlatformModels;
+import src.models.EnemyModels as EnemyModels;
 
 exports = Class(function() {
 	var MODEL_WIDTH = G_BG_WIDTH;
@@ -10,11 +12,13 @@ exports = Class(function() {
 	this.init = function(opts) {
 		this.player = new PlayerModel();
 		this.platforms = new PlatformModels();
+		this.enemies = new EnemyModels();
 	};
 
 	this.reset = function() {
 		this.player.reset(this._getPlayerConfig());
 		this.platforms.reset(this._getPlatformConfig());
+		this.enemies.reset(enemyConfig);
 
 		this.gameOver = false;
 	};
@@ -25,8 +29,10 @@ exports = Class(function() {
 		player.step(dt);
 		var offsetX = player.x;
 		this.platforms.step(dt, offsetX);
+		this.enemies.step(dt, offsetX);
 		// models interact with each other
 		this.doVertCollisions(player);
+		this.doEnemyInteractions(player);
 		// game over check
 		if (player.y > MODEL_HEIGHT || player.health <= 0) {
 			this.gameOver = true;
@@ -64,6 +70,15 @@ exports = Class(function() {
 				break;
 			}
 		}
+	};
+
+	this.doEnemyInteractions = function(player) {
+		var enemyModels = this.enemies.getAllModels();
+		for (var i = 0, ilen = enemyModels.length; i < ilen; i++) {
+			var enemyModel = enemyModels[i];
+			enemyModel.active && this.doVertCollisions(enemyModel);
+		}
+		// TODO: horz collisions w player
 	};
 
 	this._getPlayerConfig = function() {

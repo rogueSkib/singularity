@@ -4,9 +4,9 @@ import ui.resource.Image as Image;
 import ui.ViewPool as ViewPool;
 
 exports = Class(View, function(supr) {
-	var platformPool = new ViewPool({
+	var enemyPool = new ViewPool({
 		ctor: ImageView,
-		initCount: 20
+		initCount: 10
 	});
 
 	this.init = function(opts) {
@@ -15,7 +15,7 @@ exports = Class(View, function(supr) {
 	};
 
 	this.reset = function() {
-		platformPool.releaseAllViews();
+		enemyPool.releaseAllViews();
 	};
 
 	this.update = function(dt, x, models) {
@@ -23,15 +23,15 @@ exports = Class(View, function(supr) {
 		for (var i = 0, ilen = models.length; i < ilen; i++) {
 			var model = models[i];
 			if (model.active && model.view === null) {
-				this._attachPlatformView(model);
+				this._attachEnemyView(model);
 			} else if (!model.active && model.view !== null) {
-				this._removePlatformView(model);
+				this._removeEnemyView(model);
 			}
 		}
 	};
 
-	this._attachPlatformView = function(model) {
-		var view = platformPool.obtainView({
+	this._attachEnemyView = function(model) {
+		var view = enemyPool.obtainView({
 			parent: this,
 			x: model.x,
 			y: model.y,
@@ -42,8 +42,8 @@ exports = Class(View, function(supr) {
 		model.view = view;
 	};
 
-	this._removePlatformView = function(model) {
-		platformPool.releaseView(model.view);
+	this._removeEnemyView = function(model) {
+		enemyPool.releaseView(model.view);
 		model.view = null;
 	};
 });
