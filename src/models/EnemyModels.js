@@ -21,6 +21,10 @@ exports = Class(function() {
 		ctor: BasicEnemyModel
 	});
 
+	var _modelGroups = [
+		basicPool._models
+	];
+
 	this.init = function() {
 		this.lastX = 0;
 		this.spawnX = 0;
@@ -81,10 +85,10 @@ exports = Class(function() {
 		// spawn new enemies
 		while (this.spawnX <= x + BG_WIDTH) {
 			var eData = this._getSpawn();
-			var iData = imgCache[pData.image];
+			var iData = imgCache[eData.image];
 			var gData = eData.gap;
 			var gap = rollInt(gData.min, gData.max);
-			var model = platformPool.obtainModel();
+			var model = basicPool.obtainModel();
 			var yData = eData.y;
 			var ex = this.spawnX;
 			var ey = this.spawnY + (yData ? rollFloat(yData.min, yData.max) : 0);
@@ -109,9 +113,7 @@ exports = Class(function() {
 		return basicPool._models;
 	};
 
-	this.getAllModels = function() {
-		var all = [];
-		all.concat(basicPool._models);
-		return all;
+	this.getModelGroups = function() {
+		return _modelGroups;
 	};
 });

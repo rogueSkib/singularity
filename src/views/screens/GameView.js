@@ -5,6 +5,7 @@ import src.conf.parallaxConfig as parallaxConfig;
 import src.views.components.PlayerView as PlayerView;
 import src.views.components.ParallaxViews as ParallaxViews;
 import src.views.components.PlatformViews as PlatformViews;
+import src.views.components.EnemyViews as EnemyViews;
 import src.views.components.StatusViews as StatusViews;
 import src.views.components.InputView as InputView;
 
@@ -15,6 +16,7 @@ exports = Class(View, function(supr) {
 	var BG_WIDTH = G_BG_WIDTH;
 	var BG_HEIGHT = G_BG_HEIGHT;
 	var Z_UI = 500;
+	var Z_ENEMIES = 115;
 	var Z_PLAYER = 110;
 	var Z_PLATFORMS = 100;
 
@@ -51,6 +53,11 @@ exports = Class(View, function(supr) {
 			zIndex: Z_PLATFORMS
 		});
 
+		this.enemies = new EnemyViews({
+			parent: this.rootView,
+			zIndex: Z_ENEMIES
+		});
+
 		this.status = new StatusViews({
 			parent: this.rootView,
 			zIndex: Z_UI
@@ -69,6 +76,7 @@ exports = Class(View, function(supr) {
 		this.player.reset(model.player);
 		this.parallax.reset(this._getParallaxConfig());
 		this.platforms.reset();
+		this.enemies.reset();
 		this.status.reset(model.player);
 
 		this.gameOver = false;
@@ -91,6 +99,7 @@ exports = Class(View, function(supr) {
 		this.player.update(dt, offsetX, model.player);
 		this.parallax.update(dt, offsetX);
 		this.platforms.update(dt, offsetX, model.getPlatformModels());
+		this.enemies.update(dt, offsetX, model.getEnemyModelGroups());
 		this.status.update(dt, model.player);
 		// game over check
 		if (model.gameOver && !this.gameOver) {

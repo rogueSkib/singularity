@@ -29,7 +29,8 @@ exports = Class(function() {
 		player.step(dt);
 		var offsetX = player.x;
 		this.platforms.step(dt, offsetX);
-		this.enemies.step(dt, offsetX);
+		this.enemies.spawnY = this.platforms.spawnY;
+		// this.enemies.step(dt, offsetX);
 		// models interact with each other
 		this.doVertCollisions(player);
 		this.doEnemyInteractions(player);
@@ -73,10 +74,13 @@ exports = Class(function() {
 	};
 
 	this.doEnemyInteractions = function(player) {
-		var enemyModels = this.enemies.getAllModels();
-		for (var i = 0, ilen = enemyModels.length; i < ilen; i++) {
-			var enemyModel = enemyModels[i];
-			enemyModel.active && this.doVertCollisions(enemyModel);
+		var enemyModelGroups = this.enemies.getModelGroups();
+		for (var i = 0, ilen = enemyModelGroups.length; i < ilen; i++) {
+			var modelGroup = enemyModelGroups[i];
+			for (var j = 0, jlen = modelGroup.length; j < jlen; j++) {
+				var enemyModel = modelGroup[j];
+				enemyModel.active && this.doVertCollisions(enemyModel);
+			}
 		}
 		// TODO: horz collisions w player
 	};
@@ -91,5 +95,9 @@ exports = Class(function() {
 
 	this.getPlatformModels = function() {
 		return this.platforms.getModels();
+	};
+
+	this.getEnemyModelGroups = function() {
+		return this.enemies.getModelGroups();
 	};
 });

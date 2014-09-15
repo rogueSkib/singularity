@@ -18,14 +18,17 @@ exports = Class(View, function(supr) {
 		enemyPool.releaseAllViews();
 	};
 
-	this.update = function(dt, x, models) {
+	this.update = function(dt, x, modelGroups) {
 		this.style.x = -x;
-		for (var i = 0, ilen = models.length; i < ilen; i++) {
-			var model = models[i];
-			if (model.active && model.view === null) {
-				this._attachEnemyView(model);
-			} else if (!model.active && model.view !== null) {
-				this._removeEnemyView(model);
+		for (var i = 0, ilen = modelGroups.length; i < ilen; i++) {
+			var modelGroup = modelGroups[i];
+			for (var j = 0, jlen = modelGroup.length; j < jlen; j++) {
+				var model = modelGroup[j];
+				if (model.active && model.view === null) {
+					this._attachEnemyView(model);
+				} else if (!model.active && model.view !== null) {
+					this._removeEnemyView(model);
+				}
 			}
 		}
 	};
