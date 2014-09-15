@@ -4,8 +4,6 @@ import ui.resource.Image as Image;
 import ui.ViewPool as ViewPool;
 
 exports = Class(View, function(supr) {
-	var random = Math.random;
-
 	var platformPool = new ViewPool({
 		ctor: ImageView,
 		initCount: 20

@@ -3,7 +3,6 @@ import src.models.PhysicalModel as PhysicalModel;
 exports = Class(PhysicalModel, function(supr) {
 	var pow = Math.pow;
 	var min = Math.min;
-	var max = Math.max;
 
 	var GRAVITY_ACCEL = G_GRAVITY_ACCEL;
 
