@@ -13,7 +13,7 @@
   },
   "appID": "fd339b48431d463493842ec417b0e84a",
   "dependencies": {
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.4"
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v4.0.6"
   },
   "description": "A game about running ... in the future!",
   "ios": {
@@ -28,7 +28,6 @@
     },
     "versionCode": 1
   },
-  "sdkVersion": "release-0.1.46",
   "shortName": "singularity",
   "splash": {
     "autoHide": true,

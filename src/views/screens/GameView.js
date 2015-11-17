@@ -8,6 +8,7 @@ import src.views.components.PlatformViews as PlatformViews;
 import src.views.components.EnemyViews as EnemyViews;
 import src.views.components.StatusViews as StatusViews;
 import src.views.components.InputView as InputView;
+import src.effectsEngine as effectsEngine;
 
 exports = Class(View, function(supr) {
 	var controller;
