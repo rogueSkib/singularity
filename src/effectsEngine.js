@@ -333,19 +333,7 @@ var Property = Class("Property", function () {
 
     // setting values based on a random or parameterized range
     if (data.range && data.range.length >= 2) {
-      var minVal = data.range[0];
-      var maxVal = data.range[1];
-      if (minVal > maxVal) {
-        throw new Error("Invalid range, min > max:", key, data);
-      }
-      if (data.range.length === 3) {
-        var paramID = data.range[2];
-
-        // TODO: params
-
-      } else {
-        this.value = rollFloat(minVal, maxVal);
-      }
+      this.value = getValueFromRange(data.range);
     } else if (data.value !== void 0) {
       this.value = data.value;
     } else if (key !== 'delta') {
@@ -394,27 +382,16 @@ var Target = Class("Target", function () {
 
     // setting values based on a random or parameterized range
     if (data.range && data.range.length >= 2) {
-      var minVal = data.range[0];
-      var maxVal = data.range[1];
-      if (minVal > maxVal) {
-        throw new Error("Invalid range, min > max:", data);
-      }
-      if (data.range.length === 3) {
-        var paramID = data.range[2];
-
-        // TODO: params
-
-      } else {
-        this.value = rollFloat(minVal, maxVal);
-      }
+      this.value = getValueFromRange(data.range);
     }
 
-    // find the appropriate animate id
-    if (data.easing) {
-      if (data.easing in easingFunctions) {
-
+    // find the appropriate animate easing function ID
+    var easing = data.easing;
+    if (easing) {
+      if (easing in easingFunctions) {
+        this.easing = animate[easing];
       } else {
-        
+        throw new Error("Invalid easing function name:", easing);
       }
     }
   };
@@ -475,6 +452,26 @@ var ObjectPool = Class("ObjectPool", function () {
     }
   };
 });
+
+
+
+function getValueFromRange (range) {
+  var value = 0;
+  var minVal = range[0];
+  var maxVal = range[1];
+  if (minVal > maxVal) {
+    throw new Error("Invalid range, min > max:", range);
+  }
+  if (range.length === 3) {
+    var paramID = range[2];
+
+    // TODO: params
+
+  } else {
+    value = rollFloat(minVal, maxVal);
+  }
+  return value;
+};
 
 
 
