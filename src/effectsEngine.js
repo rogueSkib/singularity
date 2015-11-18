@@ -58,6 +58,16 @@ var OTHER_KEY_COUNT = OTHER_KEYS.length;
 
 
 
+/**
+ * EffectsEngine Notes
+ *  this engine is designed to
+ *    expand on the original timestep ParticleEngine while fixing its problems
+ *    take advantage of timestep animate's
+ *      API (target values over time with easing functions)
+ *      and native acceleration
+ *    use near-zero garbage-collection
+ *    and to consume JSON data to emit effects from a single line of code
+ */
 var EffectsEngine = Class(View, function () {
   var superProto = View.prototype;
   var effectUID = 0;
@@ -104,6 +114,11 @@ var EffectsEngine = Class(View, function () {
 
 
 
+/**
+ * Effect Notes
+ *  an effect is a group of particles that share the same data definition
+ *  most "particle effects" are created by several of these
+ */
 var Effect = Class("Effect", function () {
   this.init = function () {
     this.id = "";
@@ -112,6 +127,7 @@ var Effect = Class("Effect", function () {
     this.data = null;
     this.opts = null;
     this.activeParticleCount = 0;
+    this.activeParameters = {};
   };
 
   this.reset = function (data, opts) {
@@ -122,6 +138,21 @@ var Effect = Class("Effect", function () {
     this.opts = opts;
     this.activeParticleCount = 0;
 
+    // set up parameters for this effect
+    var params = data.parameters;
+    if (params) {
+      for (var i = 0; i < params.length; i++) {
+        var paramID = paramData.id;
+        if (this.activeParameters[paramID]) {
+          throw new Error("Duplicate parameter ID defined:", paramID, data);
+        }
+        var param = parameterPool.obtain();
+        var paramData = params[i];
+        param.reset(this, paramData);
+        this.activeParameters[paramID] = param;
+      }
+    }
+
     // emit immediately if not a continuous effect
     if (!this.continuous) {
       this.emitParticles();
@@ -129,6 +160,12 @@ var Effect = Class("Effect", function () {
   };
 
   this.recycle = function () {
+    var params = this.activeParameters;
+    for (var id in params) {
+      var param = params[id];
+      param && param.recycle();
+      params[id] = null;
+    }
     effectPool.release(this);
   };
 
@@ -141,26 +178,42 @@ var Effect = Class("Effect", function () {
   };
 
   this.stop = function () {
-    // TODO: recycle all related particles and the effect itself
+    // TODO: recycle all related particles, params, etc. and the effect itself
     this.recycle();
   };
 
   this.emitParticles = function () {
     var chance = this.count % 1;
     var count = floor(this.count) + (random() < chance ? 1 : 0);
+    var paramKeys = Object.keys(this.activeParameters);
+    var paramCount = paramKeys.length;
     for (var i = 0; i < count; i++) {
       var particle = particlePool.obtain();
       particle.reset(this);
       this.activeParticleCount++;
+
+      if (!this.continuous) {
+        for (var j = 0; j < paramCount; j++) {
+          var param = this.activeParameters[paramKeys[j]];
+          param && param.update(i / count);
+        }
+      }
     }
   };
 
   this.step = function (dt) {
     if (this.continuous) {
-      // emit each tick for continuous effects
+      // step continuous parameters each tick
+      var paramKeys = Object.keys(this.activeParameters);
+      var paramCount = paramKeys.length;
+      for (var i = 0; i < paramCount; i++) {
+        var param = this.activeParameters[paramKeys[i]];
+        param && param.step(dt);
+      }
+      // emit particles for continuous effects each tick
       this.emitParticles();
     } else if (this.activeParticleCount <= 0) {
-      // recycle the effect when it's out of active particles
+      // recycle non-continuous effects when out of active particles
       this.recycle();
     }
   };
@@ -168,6 +221,10 @@ var Effect = Class("Effect", function () {
 
 
 
+/**
+ * Particle Notes
+ *  a particle moves a single ImageView across the screen
+ */
 var Particle = Class("Particle", function () {
   this.init = function () {
     this.view = new ImageView({ visible: false });
@@ -202,7 +259,7 @@ var Particle = Class("Particle", function () {
     for (var i = 0; i < PROPERTY_KEY_COUNT; i++) {
       var key = PROPERTY_KEYS[i];
       var prop = this[key];
-      prop.reset(key, data[key]);
+      prop.reset(effect, key, data[key]);
       if (prop.delta) {
         this.hasDeltas = true;
       }
@@ -317,6 +374,11 @@ var Particle = Class("Particle", function () {
 
 
 
+/**
+ * Property Notes
+ *  properties represent a value on a particle that can update over time
+ *  they can be stepped by delta values (i.e. velocity) or by targets to aniamte
+ */
 var Property = Class("Property", function () {
   this.init = function () {
     this.value = 0;
@@ -326,14 +388,14 @@ var Property = Class("Property", function () {
     this._obtainedFromPool = false;
   };
 
-  this.reset = function (key, data) {
+  this.reset = function (effect, key, data) {
     this.value = 0;
     this.delta = null;
     this.targets.length = 0;
 
     // setting values based on a random or parameterized range
     if (data.range && data.range.length >= 2) {
-      this.value = getValueFromRange(data.range);
+      this.value = getValueFromRange(effect, data.range);
     } else if (data.value !== void 0) {
       this.value = data.value;
     } else if (key !== 'delta') {
@@ -344,7 +406,7 @@ var Property = Class("Property", function () {
     if (data.targets && data.targets.length) {
       for (var i = 0; i < data.targets.length; i++) {
         var target = targetPool.obtain();
-        target.reset(data.targets[i]);
+        target.reset(effect, data.targets[i]);
         this.targets.push(target);
       }
     } else if (data.delta) {
@@ -366,6 +428,11 @@ var Property = Class("Property", function () {
 
 
 
+/**
+ * Target Notes
+ *  targets represent a value to step towards over time
+ *  they are designed to be used by timestep animate
+ */
 var Target = Class("Target", function () {
   this.init = function () {
     this.value = 0;
@@ -374,7 +441,7 @@ var Target = Class("Target", function () {
     this.easing = animate.linear;
   };
 
-  this.reset = function (data) {
+  this.reset = function (effect, data) {
     this.value = data.value || 0;
     this.delay = data.delay || 0;
     this.duration = data.duration || 0;
@@ -382,7 +449,7 @@ var Target = Class("Target", function () {
 
     // setting values based on a random or parameterized range
     if (data.range && data.range.length >= 2) {
-      this.value = getValueFromRange(data.range);
+      this.value = getValueFromRange(effect, data.range);
     }
 
     // find the appropriate animate easing function ID
@@ -403,6 +470,82 @@ var Target = Class("Target", function () {
 
 
 
+/**
+ * Parameter Notes
+ *  params represent a distribution over time or particle count from [0, 1)
+ *  timestep animate's easing functions can be used to add nice patterns
+ *  properties are tied to params via a range of the format: [min, max, paramID]
+ *
+ *  for non-continuous effects,
+ *    for random params, the param is re-rolled after each particle
+ *    for non-random params, the param is the particle index / count
+ *  for continuous effects,
+ *    for random params, the param is re-rolled after resetInterval milliseconds
+ *    for non-random params, the param is the percent of resetInterval elapsed
+ */
+var Parameter = Class("Parameter", function () {
+  this.init = function () {
+    this.id = "";
+    this.value = 0;
+    this.random = false;
+    this.elapsed = 0;
+    this.resetInterval = 16;
+    this.distribution = easingFunctions["linear"];
+  };
+
+  this.reset = function (effect, data) {
+    this.id = "" + data.id;
+    this.value = 0;
+    this.random = data.random || false;
+    this.elapsed = 0;
+    this.resetInterval = data.resetInterval || 16;
+    this.distribution = easingFunctions["linear"];
+
+    // find the appropriate animate easing function
+    var distribution = data.distribution;
+    if (distribution) {
+      if (distribution in easingFunctions) {
+        this.distribution = easingFunctions[distribution];
+      } else {
+        throw new Error("Invalid distribution function name:", distribution);
+      }
+    }
+
+    this.update(0);
+  };
+
+  this.recycle = function () {
+    parameterPool.release(this);
+  };
+
+  this.update = function (value) {
+    if (this.random) {
+      this.value = random();
+    } else {
+      this.value = value;
+    }
+  };
+
+  // only continuous effects step their parameters
+  this.step = function (dt) {
+    this.elapsed += dt;
+    this.elapsed = this.elapsed % this.resetInterval;
+    this.update(this.elapsed / this.resetInterval);
+  };
+
+  this.getValueBetween = function (minVal, maxVal) {
+    var diff = maxVal - minVal;
+    return minVal + diff * this.distribution(this.value);
+  };
+});
+
+
+
+/**
+ * Object Pool Notes
+ *  jsio classes can be very costly to garbage collect and initialize,
+ *  so be good to the environment, and always recycle!
+ */
 var ObjectPool = Class("ObjectPool", function () {
   this.init = function (ctor) {
     this._ctor = ctor;
@@ -455,18 +598,28 @@ var ObjectPool = Class("ObjectPool", function () {
 
 
 
-function getValueFromRange (range) {
+/**
+ * Range Notes
+ *  ranges represent a random or parameterized distribution of values
+ *  they come in 2 valid formats
+ *    [min, max] - a random float between min and max
+ *    [min, max, paramID] - a parameterized float between min and max
+ */
+function getValueFromRange (effect, range) {
   var value = 0;
   var minVal = range[0];
   var maxVal = range[1];
   if (minVal > maxVal) {
-    throw new Error("Invalid range, min > max:", range);
+    throw new Error("Invalid range in effect, min > max:", effect, range);
   }
   if (range.length === 3) {
     var paramID = range[2];
-
-    // TODO: params
-
+    var param = effect.activeParameters[paramID];
+    if (param) {
+      value = param.getValue(minVal, maxVal);
+    } else {
+      throw new Error("Invalid parameter ID for effect:", effect, range);
+    }
   } else {
     value = rollFloat(minVal, maxVal);
   }
@@ -476,6 +629,7 @@ function getValueFromRange (range) {
 
 
 // private class-wide pools and singleton exports
+var parameterPool = new ObjectPool(Parameter);
 var targetPool = new ObjectPool(Target);
 var propertyPool = new ObjectPool(Property);
 var particlePool = new ObjectPool(Particle);
