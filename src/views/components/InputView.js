@@ -2,6 +2,7 @@ import ui.View as View;
 
 exports = Class(View, function(supr) {
 	var model;
+	var gameView;
 
 	var SWIPE_PX_PER_MS = 1;
 	var SWIPE_PX_MIN = 50;
@@ -10,6 +11,7 @@ exports = Class(View, function(supr) {
 		supr(this, 'init', arguments);
 
 		model = opts.model;
+		gameView = opts.parent;
 
 		this.startEvt = null;
 		this.startPt = null;
@@ -52,6 +54,7 @@ exports = Class(View, function(supr) {
 		}
 
 		model.player.jump();
+		gameView.emitEffect();
 		this.finishEvent();
 	};
 

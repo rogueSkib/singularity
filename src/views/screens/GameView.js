@@ -70,6 +70,8 @@ exports = Class(View, function(supr) {
 			width: BG_WIDTH,
 			height: BG_HEIGHT
 		});
+
+		this.addSubview(effectsEngine);
 	};
 
 	this.resetView = function() {
@@ -81,6 +83,69 @@ exports = Class(View, function(supr) {
 		this.status.reset(model.player);
 
 		this.gameOver = false;
+	};
+
+	this.emitEffect = function () {
+		var size = 50;
+		var ttl = 450;
+		var TAU = 2 * Math.PI;
+		effectsEngine.emitEffectsFromData({
+			parameters: [],
+			count: 16,
+			x: 100,
+			y: {
+				range: [-5 - size / 2, 5 - size / 2]
+			},
+			radius: {
+				range: [-5, 5],
+				delta: {
+					range: [0, 400],
+					targets: [{
+						value: 0,
+						delay: 0,
+						duration: ttl
+					}]
+				}
+			},
+			theta: { range: [0, TAU] },
+			r: {
+				range: [0, TAU],
+				delta: {
+					range: [-4, 4],
+					targets: [{
+						value: 0,
+						delay: 0,
+						duration: ttl
+					}]
+				}
+			},
+			anchorX: size / 2,
+			anchorY: size / 2,
+			width: size,
+			height: size,
+			scale: {
+				range: [0.25, 2.5],
+				targets: [{
+					value: 0,
+					delay: 0,
+					duration: ttl
+				}]
+			},
+			ttl: ttl,
+			image: [
+				"resources/images/particleSmoke1.png",
+				"resources/images/particleSmoke2.png",
+				"resources/images/particleSmoke3.png",
+				"resources/images/particleSmoke4.png",
+				"resources/images/particleSmoke5.png",
+				"resources/images/particleSmoke6.png"
+			],
+			compositeOperation: 'lighter'
+		}, {
+			id: "explosion",
+			x: this.player.style.x + this.player.style.width / 2,
+			y: this.player.style.y + this.player.style.height / 2
+		});
 	};
 
 	this._getParallaxConfig = function() {
